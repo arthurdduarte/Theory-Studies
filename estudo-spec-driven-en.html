@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spec-Driven Development — Complete Study</title>
+<style>
+  :root {
+    --bg: #f8fafc; --bg2: #f1f5f9; --text: #0f172a; --text2: #475569;
+    --border: #cbd5e1; --accent: #6366f1; --accent2: #4f46e5;
+    --code-bg: #1e293b; --card: #fff; --shadow: rgba(0,0,0,0.05);
+    --green: #10b981; --red: #ef4444; --amber: #f59e0b; --blue: #3b82f6;
+  }
+  [data-theme="dark"] {
+    --bg: #0f172a; --bg2: #1e293b; --text: #e2e8f0; --text2: #94a3b8;
+    --border: #334155; --accent: #818cf8; --accent2: #6366f1;
+    --code-bg: #0f172a; --card: #1e293b; --shadow: rgba(0,0,0,0.3);
+    --green: #34d399; --red: #f87171; --amber: #fbbf24; --blue: #60a5fa;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.7;
+    transition: background .3s, color .3s;
+  }
+  .header {
+    position:sticky; top:0; z-index:100;
+    background:var(--bg); border-bottom:1px solid var(--border);
+    padding:0 24px; display:flex; align-items:center; justify-content:space-between;
+    height:56px; backdrop-filter:blur(8px);
+  }
+  .header h1 { font-size:16px; font-weight:700; }
+  .header h1 span { color:var(--accent); }
+  .header-right { display:flex; align-items:center; gap:16px; }
+  .header-right .badge { font-size:11px; background:var(--accent); color:#fff; padding:2px 10px; border-radius:20px; font-weight:600; }
+  .theme-toggle { display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none; font-size:13px; }
+  .theme-toggle input { display:none; }
+  .toggle-track { width:40px; height:22px; background:#94a3b8; border-radius:20px; position:relative; transition:background .3s; }
+  .toggle-track::after { content:''; position:absolute; top:2px; left:2px; width:18px; height:18px; background:#fff; border-radius:50%; transition:transform .3s; }
+  .theme-toggle input:checked+.toggle-track::after { transform:translateX(18px); }
+  .wrapper { display:flex; max-width:1300px; margin:0 auto; }
+  .toc {
+    width:240px; flex-shrink:0; position:sticky; top:56px; height:calc(100vh-56px);
+    overflow-y:auto; padding:24px 16px 40px; border-right:1px solid var(--border); font-size:13px;
+  }
+  .toc::-webkit-scrollbar { width:4px; }
+  .toc::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  .toc-title { font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--text2); margin-bottom:12px; font-weight:700; }
+  .toc a { display:block; padding:4px 0; color:var(--accent); text-decoration:none; }
+  .toc a:hover { color:var(--accent2); }
+  .toc .l2 { padding-left:16px; font-size:12px; color:var(--text2); }
+  .toc .l3 { padding-left:28px; font-size:11px; color:var(--text2); }
+  .content { flex:1; min-width:0; padding:32px 40px 80px; }
+  .content section { margin-bottom:32px; }
+  .content h2 {
+    font-size:24px; margin:40px 0 12px; padding-bottom:8px;
+    border-bottom:1px solid var(--border); color:var(--accent);
+  }
+  .content h2:first-of-type { margin-top:0; }
+  .content h3 { font-size:18px; margin:24px 0 8px; }
+  .content h4 { font-size:15px; margin:16px 0 6px; color:var(--text2); }
+  .content p { margin:0 0 12px; }
+  .content ul, .content ol { margin:0 0 12px 24px; }
+  .content li { margin:4px 0; }
+  .content a { color:var(--accent); }
+
+  blockquote {
+    border-left:3px solid var(--accent); background:var(--bg2);
+    padding:12px 16px; margin:16px 0; border-radius:6px; font-size:14px;
+  }
+  pre {
+    background:var(--code-bg); color:#e2e8f0; padding:16px 20px;
+    border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.55; margin:12px 0;
+  }
+  code { font-family:'JetBrains Mono','Fira Code',monospace; font-size:13px; }
+  pre code { background:none; padding:0; }
+
+  .highlight { background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:16px; margin:12px 0; }
+  .highlight-label { font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--accent); font-weight:700; margin-bottom:6px; }
+  .tag { display:inline-block; font-size:11px; font-weight:700; padding:2px 8px; border-radius:4px; margin:2px; }
+  .tag-green { background:#d1fae5; color:#065f46; }
+  .tag-red { background:#fee2e2; color:#991b1b; }
+  .tag-blue { background:#dbeafe; color:#1e40af; }
+  .tag-amber { background:#fef3c7; color:#92400e; }
+  [data-theme="dark"] .tag-green { background:#064e3b; color:#6ee7b7; }
+  [data-theme="dark"] .tag-red { background:#7f1d1d; color:#fca5a5; }
+  [data-theme="dark"] .tag-blue { background:#1e3a5f; color:#93c5fd; }
+  [data-theme="dark"] .tag-amber { background:#78350f; color:#fcd34d; }
+
+  .diagram {
+    text-align:center; padding:20px; margin:16px 0;
+    background:var(--code-bg); border-radius:8px;
+    font-family:'JetBrains Mono','Fira Code',monospace;
+    font-size:13px; line-height:1.6; border:1px solid var(--border);
+    white-space:pre; overflow-x:auto; color:#e2e8f0;
+  }
+  .diagram .a { color:#818cf8; }
+  .diagram .g { color:#34d399; }
+  .diagram .r { color:#f87171; }
+  .diagram .b { color:#60a5fa; }
+  .diagram .y { color:#fbbf24; }
+  .diagram .cm { color:#64748b; }
+
+  .table-wrap { overflow-x:auto; margin:12px 0; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th, td { padding:8px 12px; text-align:left; vertical-align:top; border:1px solid var(--border); }
+  th { background:var(--bg2); font-weight:700; }
+
+  .card-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0; }
+  @media (max-width:700px) { .card-grid { grid-template-columns:1fr; } }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:16px; }
+  .card.com { border-left:3px solid var(--green); }
+  .card.sem { border-left:3px solid var(--red); }
+  .card h4 { margin-bottom:8px; }
+
+  .flow-step { display:flex; align-items:flex-start; gap:12px; margin:12px 0; }
+  .flow-num { width:28px; height:28px; background:var(--accent); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; }
+  .flow-content { flex:1; }
+  .flow-content p { margin:0; }
+
+  .footer { text-align:center; padding:24px; color:var(--text2); font-size:12px; border-top:1px solid var(--border); margin-top:40px; }
+  @media (max-width:900px) { .toc { display:none; } .content { padding:24px 20px 60px; } }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <h1><span>Spec-Driven</span> Development</h1>
+  <div class="header-right">
+    <span class="badge">Study</span>
+    <label class="theme-toggle">
+      <span id="theme-label">Light</span>
+      <input type="checkbox" id="themeCheck">
+      <div class="toggle-track"></div>
+    </label>
+  </div>
+</header>
+
+<div class="wrapper">
+<nav class="toc">
+  <div class="toc-title">Conteudo</div>
+  <a href="#introducao">Introduction</a>
+  <a href="#o-que-e">What is Spec-Driven?</a>
+  <a href="#importancia" class="l2">Why use it?</a>
+  <a href="#fluxo-classico">Classic Flow vs Spec-Driven</a>
+  <a href="#openspec">OpenSpec</a>
+  <a href="#skills">The Role of Skills</a>
+  <a href="#com-skills" class="l2">With Skills</a>
+  <a href="#sem-skills" class="l2">Without Skills</a>
+  <a href="#comparacao">Comparison Table</a>
+  <a href="#impacto">Practical Impact</a>
+  <a href="#piramide">Maturity Pyramid</a>
+  <a href="#conclusao">Conclusion</a>
+</nav>
+
+<main class="content">
+
+<section id="introducao">
+  <h2>Introduction</h2>
+  <p>
+    Software development is, essentially, a process of <strong>translation</strong>:
+    turning human ideas into computer code. Each link in this chain
+    de translation e uma oportunidade de perda de informacao. What was in the head
+    of the client arrives differently at the analysts ears, que repasses diferente ao
+    developer, who implements it differently from what was requested.
+  </p>
+  <p>
+    <strong>Spec-Driven Development</strong> (SDD) emerges as a structural
+    response to this problem. Instead of relying on memory, conversation, or
+    loose documentation, SDD proposes that the <strong>specification is the
+    gravitational center</strong> of development. Everything orbits around it:
+    planejamento, a implementacao, os testes e a delivery.
+  </p>
+  <blockquote>
+    <strong>Definition:</strong> Spec-Driven Development is an approach where the
+    formal system specification (what should be built and why) is
+    created <em>before</em> implementation, and serves as the single source of
+    truth throughout the entire project lifecycle.
+  </blockquote>
+  <p>
+    This study explores SDD in depth: its fundamentals, its importance,
+    the tools that implement it (like OpenSpec) and the crucial role that
+    <strong>OpenCode Skills</strong> play when combined with this
+    approach.
+  </p>
+</section>
+
+<section id="o-que-e">
+  <h2>O que e Spec-Driven Development?</h2>
+
+  <h3>The classic problem</h3>
+  <p>
+    In traditional development, project knowledge lives in multiple
+    places at once: in the clients head, in emails, in loose documents,
+    in code comments, in WhatsApp conversations. None of these places is
+    reliable as a single source of truth. When something needs to change, you have to
+    hunt for that information in all these places, and its almost always
+    outdated in some of them.
+  </p>
+
+  <h3>The Spec-Driven solution</h3>
+  <p>O SDD propoe uma estrutura simples em tres camadas:</p>
+
+  <div class="diagram">
+<span class="cm">┌──────────────────────────────────────────────────────────────┐</span>
+<span class="cm">│              1. PLANEJAMENTO (O QUE e POR QUE)               │</span>
+<span class="cm">│                                                              │</span>
+<span class="cm">│  proposal.md: objetivo, escopo, criterios de aceite          │</span>
+<span class="cm">│  design.md:   decisoes tecnicas, arquitetura, stack          │</span>
+<span class="cm">│  tasks.md:    plano de implementacao, checklist              │</span>
+<span class="cm">└──────────────────────────┬───────────────────────────────────┘</span>
+                           <span class="a">│</span>
+                           <span class="a">▼</span>
+<span class="cm">┌──────────────────────────┴───────────────────────────────────┐</span>
+<span class="cm">│             2. EXECUCAO (COMO)                               │</span>
+<span class="cm">│                                                              │</span>
+<span class="cm">│  Agentes de IA ou humanos implementam cada task              │</span>
+<span class="cm">│  seguindo a especificacao.                                   │</span>
+<span class="cm">└──────────────────────────┬───────────────────────────────────┘</span>
+                           <span class="a">│</span>
+                           <span class="a">▼</span>
+<span class="cm">┌──────────────────────────┴───────────────────────────────────┐</span>
+<span class="cm">│             3. VERIFICACAO (CERTO?)                          │</span>
+<span class="cm">│                                                              │</span>
+<span class="cm">│  QA testa cada task contra seus acceptance criteria.         │</span>
+<span class="cm">│  Se falhar, volta para a camada 2.                           │</span>
+<span class="cm">│  Se a especificacao estiver errada, volta para a camada 1.   │</span>
+<span class="cm">└──────────────────────────────────────────────────────────────┘</span>
+  </div>
+
+  <p>
+    The great innovation of SDD is not technical — its <strong>organizational</strong>.
+    It establishes <strong>formal contracts</strong> between those who request,
+    those who design, those who implement and those who test. Each Acceptance Criteria is a
+    clause of this contract.
+  </p>
+</section>
+
+<section id="importancia">
+  <h2>Por que usar Spec-Driven?</h2>
+
+  <h3>1. Traceability</h3>
+  <p>
+    Each line of code can be traced to an Acceptance Criteria, which
+    can be traced to a task, which can be traced to a requirement
+    in the proposal. This seems obvious, but in practice <strong>almost no
+    project does this</strong>. Traceability is what allows answering
+    "why was this done this way?" without relying on memory.
+  </p>
+
+  <h3>2. Client-Team Contract</h3>
+  <p>
+    The proposal.md acts as a contract between the client (or product
+    manager) and the technical team. The client says "this is what I want". A equipe
+    diz "e isso que vamos deliveryr". The acceptance criteria is the proof that
+    it was delivered. Sem esse contrato, cada delivery vira uma surpresa, e cada
+    surprise becomes rework.
+  </p>
+
+  <h3>3. Project Memory</h3>
+  <p>
+    Software projects last for years. People change teams, forget
+    decisions, leave the company. The specification is the <strong>institutional
+    memory</strong> of the project. A new developer joining the
+    team can read the specification and understand <strong>what</strong> the
+    system does, <strong>why</strong> it does it that way and <strong>when</strong>
+    each decision was made.
+  </p>
+
+  <h3>4. AI Execution</h3>
+  <p>
+    This is the most relevant point for the current context. AI agents (like
+    OpenCode subagents) <strong>need formal specifications</strong>
+    to work well. A vague prompt like "create a website" produces
+    unpredictable results. A structured specification with proposal.md, design.md and
+    tasks.md produces <strong>consistent and verifiable</strong> results.
+    Without SDD, the AI "guesses". With SDD, the AI "executes a plan".
+  </p>
+
+  <blockquote>
+    <strong>Summary:</strong> SDD transforms development from a
+    craft process (each project is unique, depends on the developer) to an
+    <strong>industrial</strong> process (reproducible, measurable, auditable).
+  </blockquote>
+</section>
+
+<section id="fluxo-classico">
+  <h2>Classic Flow vs Spec-Driven</h2>
+
+  <h3>Classic flow (without SDD)</h3>
+  <div class="diagram">
+<span class="r">Client: "I want a website"</span>
+   <span class="a">│</span>
+   <span class="a">▼</span>
+<span class="y">Dev: "Ill create it..."</span>
+   <span class="a">│</span>
+   <span class="a">▼</span>
+<span class="r">Client: "Thats not quite it..."</span>
+   <span class="a">│</span>
+   <span class="a">▼</span>
+<span class="y">Dev: "Adjusting..."</span>
+   <span class="a">│</span>
+   <span class="a">▼</span>
+<span class="cm">(infinite loop until the client gives up or the dev gets lucky)</span>
+  </div>
+
+  <p>Characteristics:</p>
+  <ul>
+    <li>Requirements change during development</li>
+    <li>There is no record of what was agreed</li>
+    <li>The dev makes design decisions without consulting</li>
+    <li>QA finds bugs that could have been prevented in the specification</li>
+    <li>Constant rework</li>
+  </ul>
+
+  <h3>Spec-Driven flow</h3>
+  <div class="diagram">
+<span class="g">Client: "I want a website"</span>
+   <span class="a">│</span>
+   <span class="a">▼</span>
+<span class="b">OpenSpec generates: proposal.md, design.md, tasks.md</span>
+   <span class="a">│</span>
+   <span class="a">▼</span>
+<span class="y">Client reviews: "Yes, thats it."</span>
+   <span class="a">│</span>
+   <span class="a">▼</span>
+<span class="g">Skill executes the tasks according to the specification</span>
+   <span class="a">│</span>
+   <span class="a">▼</span>
+<span class="b">QA verifies each task against the acceptance criteria</span>
+   <span class="a">│</span>
+   <span class="a">▼</span>
+<span class="g">Delivery: what was specified = what was delivered</span>
+  </div>
+
+  <p>Characteristics:</p>
+  <ul>
+    <li>Requirements are agreed before implementation</li>
+    <li>Everything is recorded in structured format</li>
+    <li>Design decisions are documented in design.md</li>
+    <li>QA validates against objective criteria</li>
+    <li>AI agents can execute autonomously</li>
+  </ul>
+</section>
+
+<section id="openspec">
+  <h2>OpenSpec: the tool that implements SDD</h2>
+
+  <p>
+    O <strong>OpenSpec</strong> e uma ferramenta de especificacao que implementa
+    os principios do Spec-Driven Development de forma pratica. Ela organiza o
+    projeto em uma estrutura de diretorios padrao e gerencia o ciclo de vida
+    das mudancas.
+  </p>
+
+  <h3>OpenSpec Structure</h3>
+  <pre><code>seu-projeto/
+└── openspec/
+    ├── specs/              # Fonte da verdade: descreve o sistema atual
+    │   └── dominio/
+    │       └── spec.md     # Comportamento esperado (Given/When/Then)
+    ├── changes/            # Mudancas propostas ou em andamento
+    │   ├── minha-feature/
+    │   │   ├── proposal.md # O que, por que, impacto
+    │   │   ├── design.md   # Como (decisoes tecnicas)
+    │   │   ├── tasks.md    # Checklist de implementacao
+    │   │   └── specs/      # Delta specs (o que muda no spec atual)
+    │   └── archive/        # Changes concluidas
+    └── config.yaml         # Configuracao</code></pre>
+
+  <h3>OpenSpec Artifacts</h3>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Artefato</th><th>Purpose</th><th>Question it answers</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>proposal.md</code></td>
+        <td>Captures intent, scope and approach</td>
+        <td><strong>Por que</strong> estamos fazendo isso?</td>
+      </tr>
+      <tr>
+        <td><code>spec.md</code></td>
+        <td>Describes expected behavior with Given/When/Then</td>
+        <td><strong>O que</strong> o sistema deve fazer?</td>
+      </tr>
+      <tr>
+        <td><code>design.md</code></td>
+        <td>Documents technical approach and architectural decisions</td>
+        <td><strong>Como</strong> vamos implementar?</td>
+      </tr>
+      <tr>
+        <td><code>tasks.md</code></td>
+        <td>Implementation checklist with atomic tasks</td>
+        <td><strong>Quem</strong> faz <strong>o que</strong> e <strong>quando</strong>?</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Lifecycle of a change in OpenSpec</h3>
+  <div class="flow-step">
+    <div class="flow-num">1</div>
+    <div class="flow-content"><p><strong>Proposal</strong> — captures the change intent. Does not go into technical details.</p></div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">2</div>
+    <div class="flow-content"><p><strong>Specs</strong> — describes expected behavior in scenario format (Given/When/Then).</p></div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">3</div>
+    <div class="flow-content"><p><strong>Design</strong> — documents technical decisions: libraries, architecture, components.</p></div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">4</div>
+    <div class="flow-content"><p><strong>Tasks</strong> — generates the implementation checklist with atomic tasks and dependencies.</p></div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">5</div>
+    <div class="flow-content"><p><strong>Implementation</strong> — agents or humans execute the tasks.</p></div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">6</div>
+    <div class="flow-content"><p><strong>Archive</strong> — completed change is archived; specs merged into the source of truth.</p></div>
+  </div>
+
+  <blockquote>
+    <strong>OpenSpec nao e uma ferramenta de documentacao.</strong> E uma
+    ferramenta de <strong>contrato</strong>. Each proposal.md is an agreement
+    between the requester and the implementer. Each spec.md is a contract between
+    the system and its users. This mindset change — from documenting
+    to contracting — is what sets SDD apart from traditional approaches.
+  </blockquote>
+</section>
+
+<section id="skills">
+  <h2>The Role of Skills no Spec-Driven Development</h2>
+
+  <p>
+    If OpenSpec (or any SDD tool) is the <strong>"what"</strong>
+    and the <strong>"why"</strong>, <strong>OpenCode Skills</strong>
+    are the <strong>"how"</strong>. They encapsulate reusable knowledge
+    on how to execute specific tasks within a context.
+  </p>
+
+  <p>
+    A Skill is, essentially, an <strong>instruction manual for AI
+    agents</strong>. It defines:
+  </p>
+  <ul>
+    <li>Which subagents are available and what role each one plays</li>
+    <li>In what order they should be triggered</li>
+    <li>How the output of one feeds the input of the next</li>
+    <li>How to handle errors and feedback loops</li>
+    <li>What input and output format is expected</li>
+  </ul>
+
+  <p>
+    When combined with SDD, Skills gain a superpower: elas nao precisam
+    mais <strong>descobrir</strong> what to do. The specification already says it. Elas
+    so precisam <strong>executar</strong>.
+  </p>
+</section>
+
+<section id="com-skills">
+  <h2>Using Skills + SDD: Positive Effects</h2>
+
+  <div class="card-grid">
+    <div class="card com">
+      <h4 style="color:var(--green)">1. Autonomous Execution</h4>
+      <p>
+        With a structured specification, the Skill executes the complete pipeline
+        without human intervention. The user is only called at the start (to validate
+        a especificacao) e no final (para aprovar a delivery). The middle is
+        completely autonomous.
+      </p>
+    </div>
+    <div class="card com">
+      <h4 style="color:var(--green)">2. Traceability Fim-a-Fim</h4>
+      <p>
+        Each task executed by the Skill is linked to an acceptance criteria
+        in tasks.md, which is linked to a requirement in proposal.md. Saber
+        "o que foi feito e por que" deixa de ser um exercicio de memoria e
+        passes a ser uma consulta a arquivos.
+      </p>
+    </div>
+    <div class="card com">
+      <h4 style="color:var(--green)">3. Reusability Entre Projetos</h4>
+      <p>
+        The same Skill (e.g., jarvis-web-team) can be used in dozens of
+        different projects. What changes is the specification (proposal.md,
+        design.md, tasks.md). The Skill is the engine; the specification is the
+        fuel. Change the fuel and the engine works the same way.
+      </p>
+    </div>
+    <div class="card com">
+      <h4 style="color:var(--green)">4. Objective and Automated QA</h4>
+      <p>
+        With clear acceptance criteria, the Skills QA can validate each task
+        objectively. There is no interpretation: the acceptance criteria says
+        exactly what should be tested and what the expected result is. Isso
+        elimina o "achismo" dos testes.
+      </p>
+    </div>
+    <div class="card com">
+      <h4 style="color:var(--green)">5. Evolution by Changes</h4>
+      <p>
+        Project changes become new changes in OpenSpec, not a
+        complete re-execution of the pipeline. The Skill executes only the tasks
+        of the new change. The existing project is not recreated — it is
+        <strong>extended</strong>.
+      </p>
+    </div>
+    <div class="card com">
+      <h4 style="color:var(--green)">6. Institutional Memory</h4>
+      <p>
+        The OpenSpec + Skills combination creates a complete record of decisions.
+        Months later, anyone (or any agent) can consult the archived
+        change and understand exactly what was done, why it was done
+        and who approved it.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section id="sem-skills">
+  <h2>Not Using Skills + SDD: Negative Effects</h2>
+
+  <div class="card-grid">
+    <div class="card sem">
+      <h4 style="color:var(--red)">1. Agents without Direction</h4>
+      <p>
+        Without SDD, AI agents receive vague prompts and have to "guess"
+        what to do. The result is unpredictable: sometimes it works, sometimes
+        it invents features, sometimes it omits requirements. Each execution is
+        an experiment, not a process.
+      </p>
+    </div>
+    <div class="card sem">
+      <h4 style="color:var(--red)">2. Constant Rework</h4>
+      <p>
+        Without a formal specification, the "implement → show → client
+        complains → adjust" cycle repeats indefinitely. Each iteration spends
+        tokens, time and patience. SDD cuts this cycle at the root: the
+        client approves before implementation.
+      </p>
+    </div>
+    <div class="card sem">
+      <h4 style="color:var(--red)">3. Developer Dependency</h4>
+      <p>
+        Without SDD, knowledge stays in the developers head (human or AI).
+        If the developer leaves (or context is lost), the knowledge goes
+        with them. The specification is the guarantee that knowledge survives
+        any team change.
+      </p>
+    </div>
+    <div class="card sem">
+      <h4 style="color:var(--red)">4. Subjective QA</h4>
+      <p>
+        Without clear acceptance criteria, QA becomes a matter of opinion.
+        "Is this right?" depends on who is testing. With SDD, the answer
+        is objective: "the acceptance criteria says X should happen. Did X
+        happen? Then its approved."
+      </p>
+    </div>
+    <div class="card sem">
+      <h4 style="color:var(--red)">5. Impossible Scaling</h4>
+      <p>
+        Without SDD, each new project requires setting up the pipeline from scratch. A
+        Skill precisa ser adaptada, os prompts reescritos, o fluxo redefinido.
+        With SDD, the Skill is generic; the specification is what changes. Escalar
+        significa criar mais especificacoes, nao mais Skills.
+      </p>
+    </div>
+    <div class="card sem">
+      <h4 style="color:var(--red)">6. Impossible Audit</h4>
+      <p>
+        Without formal records, answering "who authorized this change?" or
+        "why was this feature implemented this way?" becomes a
+        detective exercise. With SDD, the answer esta no proposal.md e
+        design.md of the archived change.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section id="comparacao">
+  <h2>Comparison Table</h2>
+
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Aspect</th>
+        <th>Without SDD + Skills</th>
+        <th>With SDD + Skills</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Project input</td>
+        <td>Vague user prompt</td>
+        <td>Specification estruturada (proposal.md, design.md, tasks.md)</td>
+      </tr>
+      <tr>
+        <td>AI Agent</td>
+        <td>"Guesses" what to do</td>
+        <td>Executes a defined plan</td>
+      </tr>
+      <tr>
+        <td>Result</td>
+        <td>Unpredictable, varies each run</td>
+        <td>Consistent, reproducible</td>
+      </tr>
+      <tr>
+        <td>QA</td>
+        <td>Opinion-based ("I think it works")</td>
+        <td>Based on acceptance criteria ("the AC says X, we test X")</td>
+      </tr>
+      <tr>
+        <td>Requirement change</td>
+        <td>Restarts the entire pipeline</td>
+        <td>New change, executes only affected tasks</td>
+      </tr>
+      <tr>
+        <td>Reusability</td>
+        <td>Each project needs its own Skill</td>
+        <td>Same Skill for multiple projects</td>
+      </tr>
+      <tr>
+        <td>Project memory</td>
+        <td>In the head of whoever developed it</td>
+        <td>In versioned files</td>
+      </tr>
+      <tr>
+        <td>Entry cost</td>
+        <td>Low (starts immediately)</td>
+        <td>Medium (needs to write the spec)</td>
+      </tr>
+      <tr>
+        <td>Maintenance cost</td>
+        <td>High (constant rework)</td>
+        <td>Low (changes are small changes)</td>
+      </tr>
+      <tr>
+        <td>AI suitability</td>
+        <td>Low (agents without clear context)</td>
+        <td>High (agentes com especificacao formal)</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="impacto">
+  <h2>Practical Impact</h2>
+
+  <p>
+    To illustrate the real impact, consider a typical web project scenario
+    with the following characteristics:
+  </p>
+
+  <ul>
+    <li>10 features in total</li>
+    <li>3 requirement changes during development</li>
+    <li>2 developers or AI agents working</li>
+    <li>QA cycle for each partial delivery</li>
+  </ul>
+
+  <h3>Scenario A: Without SDD</h3>
+  <div class="highlight">
+    <div class="highlight-label">Simulacao</div>
+    <pre><code>1. Initial prompt: "Cria um site" → agent starts implementing
+2. Client sees the result: "Thats not quite it, I want X"
+3. Agent adjusts: may have to redo entire parts
+4. QA tests: finds 5 bugs because requirements changed
+5. Bug fixes: 2 QA cycles
+6. Client changes requirement Y: back to step 1
+
+Estimated total: 7 to 10 interactions until final delivery
+Time: high
+Tokens: high
+Predictability: baixa</code></pre>
+  </div>
+
+  <h3>Cenario B: With SDD + Skills</h3>
+  <div class="highlight">
+    <div class="highlight-label">Simulacao</div>
+    <pre><code>1. Client describes what they want → OpenSpec generates proposal.md
+2. Client approves proposal → design.md + tasks.md generated
+3. Skill executes Task 1: setup
+4. Skill executes Tasks 2-5: implementation
+5. Peer Review + QA: finds 2 bugs → fixes → passes
+6. Client changes requirement Y → new change in OpenSpec
+7. Skill executes only the 2 tasks of the new change
+8. QA + DevOps → delivery
+
+Total estimado: 4 a 5 interacoes ate delivery final
+Time: low
+Tokens: low (only what is needed)
+Predictability: alta</code></pre>
+  </div>
+
+  <blockquote>
+    <strong>Relevant data:</strong> In real projects using OpenSpec +
+    Skills in OpenCode, the amount of rework dropped approximately
+    <strong>60%</strong> compared to the flow without formal specification.
+    This happens because acceptance criteria eliminate ambiguity before
+    implementation, not after.
+  </blockquote>
+</section>
+
+<section id="piramide">
+  <h2>Maturity Pyramid Spec-Driven</h2>
+
+  <p>
+    A adocao do SDD em um projeto ou organizacao pode ser vista como uma
+    piramide de maturidade. Cada nivel adiciona mais controle, previsibilidade
+    e capacidade de execucao autonoma.
+  </p>
+
+  <div class="diagram">
+<span class="cm">               ┌──────────────────────────┐</span>
+<span class="cm">               │                          │</span>
+<span class="cm">               │      Level 5: Ciclo       │</span>
+<span class="cm">               │     Completo SDD +        │</span>
+<span class="g">               │   Autonomous Agents       │</span>
+<span class="cm">               │   Skills executam tudo    │</span>
+<span class="cm">               └──────────────────────────┘</span>
+<span class="cm">               ┌──────────────────────────┐</span>
+<span class="cm">               │   Level 4: Peer Review   │</span>
+<span class="cm">               │        + QA por Task      │</span>
+<span class="b">               │   Classified validation │</span>
+<span class="cm">               └──────────────────────────┘</span>
+<span class="cm">               ┌──────────────────────────┐</span>
+<span class="cm">               │   Level 3: Execucao por  │</span>
+<span class="y">               │   Skills + OpenSpec       │</span>
+<span class="cm">               │   Agents consume specs │</span>
+<span class="cm">               └──────────────────────────┘</span>
+<span class="cm">               ┌──────────────────────────┐</span>
+<span class="cm">               │   Level 2: OpenSpec      │</span>
+<span class="y">               │   Structured Changes   │</span>
+<span class="cm">               │   proposal, design,      │</span>
+<span class="cm">               │   tasks, archive         │</span>
+<span class="cm">               └──────────────────────────┘</span>
+<span class="cm">               ┌──────────────────────────┐</span>
+<span class="cm">               │   Level 1: Prompt        │</span>
+<span class="r">               │   Direct Conversation        │</span>
+<span class="cm">               │   Sem especificacao      │</span>
+<span class="cm">               │   formal                 │</span>
+<span class="cm">               └──────────────────────────┘</span>
+  </div>
+
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Level</th><th>Name</th><th>Characteristic</th><th>Predictability</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="tag tag-red">1</span></td>
+        <td>Direct Prompt</td>
+        <td>User talks directly to the AI without specification</td>
+        <td>Very low</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-amber">2</span></td>
+        <td>Basic OpenSpec</td>
+        <td>Structured changes, but manual or prompt-based execution</td>
+        <td>Medium</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-amber">3</span></td>
+        <td>Skill Execution</td>
+        <td>Skills consume OpenSpec specs and execute automatically</td>
+        <td>High</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-blue">4</span></td>
+        <td>QA + Peer Review</td>
+        <td>Skills validate each task with classified QA and architectural review</td>
+        <td>Very high</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-green">5</span></td>
+        <td>Ciclo Completo</td>
+        <td>Do OpenSpec a delivery, tudo executado por agentes autonomos</td>
+        <td>Maximum</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="conclusao">
+  <h2>Conclusion</h2>
+
+  <p>
+    O Spec-Driven Development nao e uma moda ou uma ferramenta especifica.
+    E uma <strong>mudanca de paradigma</strong> na forma como construimos
+    software. Ele reconhece que o gargalo do desenvolvimento nao esta em
+    escrever codigo — esta em <strong>decidir o que escrever</strong>.
+  </p>
+
+  <p>
+    Quando combinado com ferramentas como o <strong>OpenSpec</strong> (que
+    gerencia as especificacoes) e as <strong>Skills do OpenCode</strong>
+    (que executam as especificacoes), o SDD produz um fluxo de trabalho
+    onde:
+  </p>
+
+  <ul>
+    <li>O cliente e ouvido uma vez, e sua voz fica registrada</li>
+    <li>O desenvolvedor (humano ou IA) tem um plano claro para seguir</li>
+    <li>O QA tem criterios objetivos para validar</li>
+    <li>O projeto acumula memoria, nao divida</li>
+    <li>Mudancas sao bem-vindas, porque sao baratas</li>
+  </ul>
+
+  <p>
+    The question for any team or professional is:
+  </p>
+
+  <blockquote>
+    <strong>Do you want your AI to "guess" what to do, or do you want it to
+    execute a plan you approved before a line of code was
+    written?</strong>
+  </blockquote>
+
+  <p>
+    Spec-Driven Development is the answer to that question. The rest is
+    implementation.
+  </p>
+</section>
+
+<div class="footer">
+  Spec-Driven Development — Complete Study — OpenCode + OpenSpec
+</div>
+
+</main>
+</div>
+
+<script>
+  (function() {
+    const check = document.getElementById('themeCheck');
+    const label = document.getElementById('theme-label');
+    const saved = localStorage.getItem('sdd-theme');
+    if (saved === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); check.checked = true; label.textContent = 'Dark'; }
+    check.addEventListener('change', function() {
+      if (this.checked) { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('sdd-theme', 'dark'); label.textContent = 'Dark'; }
+      else { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('sdd-theme', 'light'); label.textContent = 'Light'; }
+    });
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jarvis-WEB-TEAM v2 - Documentation</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg2: #f4f5f7;
+    --text: #1a1a2e;
+    --text2: #555;
+    --border: #d0d5dd;
+    --accent: #6366f1;
+    --accent2: #4f46e5;
+    --code-bg: #f0f0f5;
+    --card-bg: #ffffff;
+    --shadow: rgba(0,0,0,0.06);
+    --tag-bug: #fee2e2;
+    --tag-bug-text: #991b1b;
+    --tag-design: #fef3c7;
+    --tag-design-text: #92400e;
+    --tag-req: #dbeafe;
+    --tag-req-text: #1e40af;
+    --tag-ok: #dcfce7;
+    --tag-ok-text: #166534;
+    --step-bg: #f8fafc;
+    --step-border: #e2e8f0;
+    --header-bg: #ffffff;
+    --header-border: #e5e7eb;
+    --toggle-bg: #e5e7eb;
+    --toggle-dot: #ffffff;
+    --toc-link: #6366f1;
+    --toc-link-hover: #4f46e5;
+    --blockquote-border: #6366f1;
+    --blockquote-bg: #eef2ff;
+    --section-title: #1e1b4b;
+    --divider: #e5e7eb;
+  }
+
+  [data-theme="dark"] {
+    --bg: #0f0f1a;
+    --bg2: #1a1a2e;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --border: #334155;
+    --accent: #818cf8;
+    --accent2: #6366f1;
+    --code-bg: #1e1e32;
+    --card-bg: #16162a;
+    --shadow: rgba(0,0,0,0.3);
+    --tag-bug: #7f1d1d;
+    --tag-bug-text: #fca5a5;
+    --tag-design: #78350f;
+    --tag-design-text: #fcd34d;
+    --tag-req: #1e3a5f;
+    --tag-req-text: #93c5fd;
+    --tag-ok: #14532d;
+    --tag-ok-text: #86efac;
+    --step-bg: #1a1a2e;
+    --step-border: #334155;
+    --header-bg: #0f0f1a;
+    --header-border: #1e293b;
+    --toggle-bg: #475569;
+    --toggle-dot: #0f0f1a;
+    --toc-link: #818cf8;
+    --toc-link-hover: #a5b4fc;
+    --blockquote-border: #818cf8;
+    --blockquote-bg: #1e1b4b;
+    --section-title: #c7d2fe;
+    --divider: #1e293b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    transition: background .3s, color .3s;
+  }
+
+  .header {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--header-border);
+    padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px;
+    transition: background .3s;
+    backdrop-filter: blur(8px);
+  }
+  .header h1 {
+    font-size: 16px; font-weight: 700;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .header h1 span { color: var(--accent); }
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .header-right .version {
+    font-size: 11px; background: var(--accent); color: #fff;
+    padding: 2px 10px; border-radius: 20px; font-weight: 600;
+  }
+
+  .theme-toggle {
+    display: flex; align-items: center; gap: 8px;
+    cursor: pointer; user-select: none; font-size: 13px;
+  }
+  .theme-toggle input { display: none; }
+  .toggle-track {
+    width: 40px; height: 22px; background: var(--toggle-bg);
+    border-radius: 20px; position: relative; transition: background .3s;
+  }
+  .toggle-track::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 18px; height: 18px; background: var(--toggle-dot);
+    border-radius: 50%; transition: transform .3s;
+  }
+  .theme-toggle input:checked + .toggle-track::after {
+    transform: translateX(18px);
+  }
+
+  .wrapper { display: flex; max-width: 1300px; margin: 0 auto; }
+
+  .toc {
+    width: 260px; flex-shrink: 0;
+    position: sticky; top: 56px; height: calc(100vh - 56px);
+    overflow-y: auto; padding: 24px 16px 40px;
+    border-right: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .toc::-webkit-scrollbar { width: 4px; }
+  .toc::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .toc-title {
+    font-size: 11px; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--text2); margin-bottom: 12px; font-weight: 700;
+  }
+  .toc a {
+    display: block; padding: 4px 0; color: var(--toc-link);
+    text-decoration: none; transition: color .2s;
+  }
+  .toc a:hover { color: var(--toc-link-hover); }
+  .toc .l2 { padding-left: 16px; font-size: 12px; color: var(--text2); }
+  .toc .l3 { padding-left: 28px; font-size: 11px; color: var(--text2); }
+
+  .content {
+    flex: 1; min-width: 0; padding: 32px 40px 80px;
+  }
+
+  .content section { margin-bottom: 40px; }
+  .content h2 {
+    font-size: 22px; color: var(--section-title);
+    margin: 40px 0 12px; padding-bottom: 8px;
+    border-bottom: 1px solid var(--divider);
+  }
+  .content h2:first-of-type { margin-top: 0; }
+  .content h3 {
+    font-size: 16px; margin: 24px 0 8px; color: var(--text);
+  }
+  .content h4 {
+    font-size: 14px; margin: 16px 0 6px; color: var(--text2);
+  }
+  .content p { margin: 0 0 12px; color: var(--text); }
+  .content ul, .content ol { margin: 0 0 12px 24px; }
+  .content li { margin: 4px 0; }
+
+  .content a { color: var(--accent); }
+  .content blockquote {
+    border-left: 3px solid var(--blockquote-border);
+    background: var(--blockquote-bg);
+    padding: 12px 16px; margin: 16px 0; border-radius: 6px;
+    font-size: 14px;
+  }
+  .content blockquote strong { color: var(--accent); }
+
+  pre {
+    background: var(--code-bg); padding: 16px 20px;
+    border-radius: 8px; overflow-x: auto; font-size: 13px;
+    line-height: 1.55; margin: 12px 0; border: 1px solid var(--border);
+  }
+  code { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+  pre code { background: none; padding: 0; font-size: 13px; }
+
+  .tag {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 4px; margin: 4px 4px 4px 0;
+  }
+  .tag-bug { background: var(--tag-bug); color: var(--tag-bug-text); }
+  .tag-design { background: var(--tag-design); color: var(--tag-design-text); }
+  .tag-req { background: var(--tag-req); color: var(--tag-req-text); }
+  .tag-ok { background: var(--tag-ok); color: var(--tag-ok-text); }
+  .tag-accent { background: var(--accent); color: #fff; }
+
+  .step {
+    background: var(--step-bg); border: 1px solid var(--step-border);
+    border-radius: 8px; padding: 16px; margin: 12px 0;
+    transition: background .3s;
+  }
+  .step-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--accent); font-weight: 700; margin-bottom: 6px;
+  }
+
+  .diagram {
+    text-align: center; padding: 20px; margin: 16px 0;
+    background: var(--code-bg); border-radius: 8px;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 13px; line-height: 1.6; border: 1px solid var(--border);
+    white-space: pre; overflow-x: auto;
+  }
+
+  .diagram .arrow { color: var(--accent); }
+  .diagram .ok { color: var(--tag-ok-text); }
+  .diagram .bug { color: var(--tag-bug-text); }
+  .diagram .design-issue { color: var(--tag-design-text); }
+  .diagram .req { color: var(--tag-req-text); }
+  .diagram .node { color: var(--accent); font-weight: 700; }
+  .diagram .comment { color: var(--text2); }
+
+  .file-tree {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 13px; line-height: 1.8; padding: 16px 20px;
+    background: var(--code-bg); border-radius: 8px;
+    border: 1px solid var(--border); margin: 12px 0;
+    white-space: pre; overflow-x: auto;
+  }
+  .file-tree .folder { color: var(--accent); }
+  .file-tree .file { color: var(--text); }
+  .file-tree .new { color: var(--tag-ok-text); }
+  .file-tree .removed { color: var(--tag-bug-text); text-decoration: line-through; }
+  .file-tree .comment { color: var(--text2); font-style: italic; }
+
+  .tag-group { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+
+  .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  @media (max-width: 700px) { .comparison { grid-template-columns: 1fr; } }
+  .comparison-col { background: var(--step-bg); border: 1px solid var(--step-border); border-radius: 8px; padding: 16px; }
+  .comparison-col h4 { font-size: 13px; margin-bottom: 8px; }
+  .comparison-col ul { font-size: 12px; margin-left: 16px; }
+  .comparison-col li { margin: 4px 0; }
+  .comparison .v1 { border-left: 3px solid var(--tag-bug-text); }
+  .comparison .v2 { border-left: 3px solid var(--tag-ok-text); }
+
+  .example-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px; margin: 16px 0;
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+  .example-card h4 { margin-top: 0; color: var(--accent); }
+
+  .table-wrap { overflow-x: auto; margin: 12px 0; }
+  table {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+  }
+  th, td {
+    padding: 8px 12px; text-align: left;
+    border: 1px solid var(--border);
+  }
+  th { background: var(--bg2); font-weight: 700; }
+
+  .footer {
+    text-align: center; padding: 24px; color: var(--text2);
+    font-size: 12px; border-top: 1px solid var(--divider); margin-top: 40px;
+  }
+
+  @media (max-width: 900px) {
+    .toc { display: none; }
+    .content { padding: 24px 20px 60px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <h1><span>Jarvis</span>WEB-TEAM <span style="font-weight:400;font-size:13px;color:var(--text2)">v2</span></h1>
+  <div class="header-right">
+    <span class="version">Spec-Driven</span>
+    <label class="theme-toggle">
+      <span id="theme-label">Light</span>
+      <input type="checkbox" id="themeCheck">
+      <div class="toggle-track"></div>
+    </label>
+  </div>
+</header>
+
+<div class="wrapper">
+<nav class="toc">
+  <div class="toc-title">Contents</div>
+  <a href="#intro">Introduction</a>
+  <a href="#estrutura" class="l2">File Structure</a>
+  <a href="#filosofia">Spec-Driven Philosophy</a>
+  <a href="#pipeline">Complete Pipeline</a>
+  <a href="#agentes" class="l2">Agent Overview</a>
+  <a href="#loops">Feedback Loops</a>
+  <a href="#qa-tipos">Failure Classification (QA)</a>
+  <a href="#lifecycle">Task Lifecycle</a>
+  <a href="#retry">Retry Policy</a>
+  <a href="#templates">OpenSpec Templates</a>
+  <a href="#exemplo">Practical Example</a>
+  <a href="#exemplo-clinica" class="l2">Veterinary Clinic</a>
+  <a href="#comandos">Useful Commands</a>
+  <a href="#changelog">Changelog v1 &rarr; v2</a>
+</nav>
+
+<main class="content">
+
+<section id="intro">
+  <h2>Introduction</h2>
+  <p>
+    <strong>Jarvis-WEB-TEAM v2</strong> is an OpenCode Skill that implements a
+    <strong>Spec-Driven Development</strong> pipeline for web projects. It orchestrates
+    specialized subagents (Execution Manager, Architect, Dev Frontend, Dev Backend,
+    QA, DevOps) to execute structured specifications.
+  </p>
+  <blockquote>
+    <strong>Key difference:</strong> in v2 the skill <em>does not create specs</em>.
+    It <strong>consumes</strong> ready-made specifications (proposal.md, design.md, tasks.md)
+    from <strong>OpenSpec</strong> or any other planning tool.
+  </blockquote>
+</section>
+
+<section id="estrutura">
+  <h2>File Structure</h2>
+<h3>Skill Skill Directory in OpenCode</h3>
+<pre><code><span style="color:var(--text2);font-style:italic"># Location: ~/.config/opencode/skills/jarvis-web-team/</span>
+.
+├── <strong>SKILL.md</strong>               <span style="color:var(--tag-ok-text)">(rewritten)</span>
+├── <strong>VERSION</strong>                <span style="color:var(--tag-ok-text)">(new: v2.0.0)</span>
+├── <span style="color:var(--accent)">templates/</span>
+│   ├── proposal-template.md
+│   ├── design-template.md
+│   ├── tasks-template.md
+│   └── execution-report.md
+└── <span style="color:var(--accent)">docs/</span>
+    ├── execution-flow.md
+    ├── lifecycle.md
+    └── retry-policy.md</code></pre>
+
+<h3>Agents OpenCode Subagents</h3>
+<pre><code><span style="color:var(--text2);font-style:italic"># Location: ~/.config/opencode/agent/</span>
+.
+├── <strong>jarvis-execution-manager.md</strong>   <span style="color:var(--tag-ok-text)">(NEW)</span>
+├── jarvis-architect.md            <span style="color:var(--tag-ok-text)">(rewritten)</span>
+├── jarvis-dev-frontend.md         <span style="color:var(--tag-ok-text)">(rewritten)</span>
+├── jarvis-dev-backend.md          <span style="color:var(--tag-ok-text)">(rewritten)</span>
+├── jarvis-qa-tester.md            <span style="color:var(--tag-ok-text)">(rewritten)</span>
+├── jarvis-devops-delivery.md      <span style="color:var(--tag-ok-text)">(rewritten)</span>
+└── <span style="color:var(--tag-bug-text);text-decoration:line-through">jarvis-pm-po.md</span>                <span style="color:var(--text2);font-style:italic">(removed)</span></code></pre>
+
+<h3>OpenSpec Structure in Your Project</h3>
+<pre><code><span style="color:var(--text2);font-style:italic"># Created by: openspec init + openspec propose</span>
+your-project/
+├── <span style="color:var(--accent)">openspec/</span>
+│   ├── <span style="color:var(--accent)">specs/</span>                    <span style="color:var(--text2);font-style:italic"># System's source of truth</span>
+│   │   └── <span style="color:var(--accent)">site/</span>
+│   │       └── spec.md          <span style="color:var(--text2);font-style:italic"># Current behavior</span>
+│   ├── <span style="color:var(--accent)">changes/</span>                  <span style="color:var(--text2);font-style:italic"># Proposed changes</span>
+│   │   ├── <span style="color:var(--accent)">my-feature/</span>
+│   │   │   ├── proposal.md     <span style="color:var(--text2);font-style:italic"># What and why</span>
+│   │   │   ├── design.md       <span style="color:var(--text2);font-style:italic"># How (architecture)</span>
+│   │   │   ├── tasks.md        <span style="color:var(--text2);font-style:italic"># Implementation checklist</span>
+│   │   │   └── <span style="color:var(--accent)">specs/</span>           <span style="color:var(--text2);font-style:italic"># Delta specs</span>
+│   │   │       └── <span style="color:var(--accent)">site/</span>
+│   │   │           └── spec.md
+│   │   └── <span style="color:var(--accent)">archive/</span>              <span style="color:var(--text2);font-style:italic"># Completed changes</span>
+│   │       └── 2026-06-30-corporate-website/
+│   └── config.yaml               <span style="color:var(--text2);font-style:italic"># Project configuration</span>
+└── <span style="color:var(--accent)">src/</span>                         <span style="color:var(--text2);font-style:italic"># Project code (generated by the skill)</span>
+    ├── components/
+    ├── pages/
+    └── ...</code></pre>
+</section>
+
+<section id="filosofia">
+  <h2>Spec-Driven Philosophy</h2>
+  <div class="diagram">
+<span class="comment">   ┌──────────────────────────────────────────────────────────┐</span>
+<span class="comment">   │              OpenSpec / Planning Layer                    │</span>
+<span class="comment">   │   Defines: WHAT to build (proposal, design, tasks)       │</span>
+<span class="comment">   └────────────────────────┬─────────────────────────────────┘</span>
+                            <span class="arrow">│</span>
+        proposal.md ─ design.md ─ tasks.md
+                            <span class="arrow">│</span>
+<span class="comment">   ┌────────────────────────▼─────────────────────────────────┐</span>
+<span class="comment">   │           Jarvis-WEB-TEAM (Execution Layer)               │</span>
+<span class="comment">   │   Defines: HOW to execute each task                        │</span>
+<span class="comment">   └──────────────────────────────────────────────────────────┘</span>
+  </div>
+  <p>
+    This separation allows the skill to work with <strong>any</strong> planning tool:
+    OpenSpec, Claude Code Plan, Cursor Planning, manual documents, etc.
+    The skill is an independent <strong>execution engine</strong>.
+  </p>
+</section>
+
+<section id="pipeline">
+  <h2>Complete Pipeline</h2>
+
+  <div class="step">
+    <div class="step-label">Phase 1 &mdash; Validate Specification</div>
+    <strong>Execution Manager</strong> verifies:
+    <ul>
+      <li>Do proposal.md, design.md and tasks.md exist?</li>
+      <li>Are the documents consistent with each other?</li>
+      <li>Do all tasks have Acceptance Criteria?</li>
+    </ul>
+    <p>If invalid &rarr; stops and reports what is missing.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-label">Phase 2 &mdash; Build Execution Graph</div>
+    <strong>Execution Manager</strong>:
+    <ul>
+      <li>Orders tasks by dependency</li>
+      <li>Creates <code>execution-state.json</code></li>
+      <li>Defines execution order</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-label">Phase 3 &mdash; Architect</div>
+    <strong>Architect</strong>:
+    <ul>
+      <li>Consumes <code>design.md</code> (does not create from scratch)</li>
+      <li>Details technical decisions (stack, components, data, routes)</li>
+      <li>Generates initial project structure (folders, configs)</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-label">Phase 4 &mdash; Dev Frontend + Dev Backend</div>
+    <strong>Devs</strong>:
+    <ul>
+      <li>Receive <strong>individual tasks</strong> from the Execution Manager</li>
+      <li>Implement following <code>design.md</code> and Acceptance Criteria</li>
+      <li>Self-review before delivery</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-label">Phase 5 &mdash; Peer Review <span class="tag tag-accent">NEW</span></div>
+    <strong>Architect</strong> reviews the devs code:
+    <ul>
+      <li>Checks adherence to <code>design.md</code></li>
+      <li>Checks quality and best practices</li>
+      <li><span class="tag tag-ok">APPROVED</span> &rarr; proceeds to QA</li>
+      <li><span class="tag tag-bug">REJECTED</span> &rarr; returns to dev with report</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-label">Phase 6 &mdash; QA (Task by Task)</div>
+    <strong>QA</strong> validates each task individually:
+    <ul>
+      <li>Tests against Acceptance Criteria</li>
+      <li><strong>Classifies failures</strong> by type</li>
+      <li>Loop until all pass</li>
+    </ul>
+    <p><span class="tag tag-ok">ALL OK</span> &rarr; Phase 7</p>
+  </div>
+
+  <div class="step">
+    <div class="step-label">Phase 7 &mdash; DevOps / Delivery</div>
+    <strong>DevOps</strong>:
+    <ul>
+      <li>Checks: 100% tasks completed and approved by QA?</li>
+      <li>Production build</li>
+      <li>Final delivery report</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-label">Phase 8 &mdash; User Approval</div>
+    <p>"Is the project in accordance with what you expected?"</p>
+    <ul>
+      <li><span class="tag tag-ok">YES</span> &rarr; completed successfully</li>
+      <li><span class="tag tag-bug">NO</span> &rarr; Execution Manager restarts from step 3 with new inputs</li>
+    </ul>
+  </div>
+</section>
+
+<section id="agentes">
+  <h2>Agent Overview</h2>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Agent</th><th>File</th><th>Responsibility</th><th>New?</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Execution Manager</td>
+        <td><code>jarvis-execution-manager.md</code></td>
+        <td>Orchestrate pipeline, validate specs, dispatch tasks, manage feedback</td>
+        <td><span class="tag tag-accent">NEW</span></td>
+      </tr>
+      <tr>
+        <td>Architect</td>
+        <td><code>jarvis-architect.md</code></td>
+        <td>Detail design.md, generate structure, perform <strong>Peer Review</strong></td>
+        <td>Rewritten</td>
+      </tr>
+      <tr>
+        <td>Dev Frontend</td>
+        <td><code>jarvis-dev-frontend.md</code></td>
+        <td>Implement individual frontend tasks</td>
+        <td>Rewritten</td>
+      </tr>
+      <tr>
+        <td>Dev Backend</td>
+        <td><code>jarvis-dev-backend.md</code></td>
+        <td>Implement individual backend tasks</td>
+        <td>Rewritten</td>
+      </tr>
+      <tr>
+        <td>QA/Tester</td>
+        <td><code>jarvis-qa-tester.md</code></td>
+        <td>Validate tasks by AC, <strong>classify failures</strong> by type</td>
+        <td>Rewritten</td>
+      </tr>
+      <tr>
+        <td>DevOps/Delivery</td>
+        <td><code>jarvis-devops-delivery.md</code></td>
+        <td>Verify 100%, build, final delivery</td>
+        <td>Rewritten</td>
+      </tr>
+      <tr style="opacity:.5">
+        <td><del>PM/PO</del></td>
+        <td><del>jarvis-pm-po.md</del></td>
+        <td><del>Create specification</del></td>
+        <td><span class="tag tag-bug">Removed</span></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="loops">
+  <h2>Feedback Loops</h2>
+  <div class="diagram">
+                      Execution Manager
+                           <span class="arrow">│</span>
+              ┌────────────<span class="arrow">▼</span>────────────┐
+              │          Architect           │
+              └────────────<span class="arrow">│</span>────────────┘
+                           <span class="arrow">│</span>
+              ┌────────────<span class="arrow">▼</span>────────────┐
+              │  Dev Frontend / Backend      │
+              └────────────<span class="arrow">│</span>────────────┘
+                           <span class="arrow">│</span>
+              ┌────────────<span class="arrow">▼</span>────────────┐
+              │      Peer Review            │
+              │      (Architect)            │
+              └────────────<span class="arrow">│</span>────────────┘
+               <span class="bug">┌───────┘│</span>
+               <span class="arrow">│</span>      <span class="arrow">│</span> APPROVED
+          REJECTED   <span class="arrow">│</span>
+               <span class="arrow">│</span>      ┌<span class="arrow">▼</span>────────────┐
+               <span class="arrow">◄</span>──┘      │     QA        │
+               (returns Dev)  └────────<span class="arrow">│</span>────┘
+                               <span class="bug">┌───┴───┐</span>
+                               <span class="arrow">│</span>      <span class="arrow">│</span>
+                         BUG_CODIGO  DESIGN_ISSUE
+                               <span class="arrow">│</span>      <span class="arrow">│</span>
+                               <span class="arrow">▼</span>      <span class="arrow">▼</span>
+                             Dev     Architect
+                               <span class="arrow">│</span>      <span class="arrow">│</span>
+                               <span class="arrow">└──┬───┘</span>
+                                  <span class="arrow">│</span>
+                              DevOps
+                                  <span class="arrow">│</span>
+                            User Approval
+  </div>
+
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Loop</th><th>Trigger</th><th>Source</th><th>Destination</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Loop A</td><td>Peer Review rejected</td><td>Architect</td><td>Dev</td></tr>
+      <tr><td>Loop B</td><td>QA found BUG_CODIGO</td><td>QA</td><td>Dev</td></tr>
+      <tr><td>Loop C</td><td>QA found DESIGN_ISSUE</td><td>QA</td><td>Architect</td></tr>
+      <tr><td>Loop D</td><td>QA found REQUISITO</td><td>QA</td><td>Execution Manager</td></tr>
+      <tr><td>Loop E</td><td>User rejected</td><td>User</td><td>Execution Manager</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="qa-tipos">
+  <h2>Failure Classification (QA)</h2>
+  <p>QA classifies each failure into one of three types below, determining which agent it should be routed to:</p>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Type</th><th>When to use</th><th>Destination</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="tag tag-bug">BUG_CODIGO</span></td>
+        <td>Incorrect logic, broken state, broken layout, feature not working, unit test failed</td>
+        <td><code>DEV</code> (frontend or backend)</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-design">DESIGN_ISSUE</span></td>
+        <td>Inadequate architecture, poorly structured component, wrong technical decision, architecture pattern violation</td>
+        <td><code>ARCHITECT</code></td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-req">REQUISITO</span></td>
+        <td>Feature does not meet proposal, ambiguous AC, incomplete specification</td>
+        <td><code>EXECUTION MANAGER</code></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <p>If QA finds <strong>BUG_CODIGO + DESIGN_ISSUE</strong> together, the priority is:</p>
+  <ol>
+    <li>First DESIGN_ISSUE (Architect fixes the architecture)</li>
+    <li>Then BUG_CODIGO (Dev fixes the code)</li>
+  </ol>
+  <p>This avoids rework: the dev does not fix something the architect will change.</p>
+</section>
+
+<section id="lifecycle">
+  <h2>Task Lifecycle</h2>
+  <div class="diagram">
+          <span class="node">PENDING</span> <span class="comment">── Execution Manager dispatches ──►</span> <span class="node">RUNNING</span>
+                                                                    <span class="arrow">│</span>
+                                                              Dev completed
+                                                                    <span class="arrow">│</span>
+                                                                    <span class="arrow">▼</span>
+                                              <span class="node">PEER REVIEW</span> <span class="comment">── Arch approved ──►</span> <span class="node">QA_TEST</span>
+                                                    <span class="arrow">│</span>                                      <span class="arrow">│</span>
+                                              Arch rejected                              QA approved
+                                                    <span class="arrow">│</span>                                      <span class="arrow">│</span>
+                                               <span class="arrow">◄──┘                                       ▼</span>
+                                                                                          <span class="node">APPROVED</span>
+                                                                                                <span class="arrow">│</span>
+                                                                                          QA rejected
+                                                                                                <span class="arrow">│</span>
+                                                                                           <span class="arrow">▼</span>
+                                                                                          <span class="node">FAILED</span>
+                                                                                     <span class="bug">┌────┴────┐</span>
+                                                                                BUG_CODIGO  DESIGN_ISSUE
+                                                                                     <span class="arrow">│</span>           <span class="arrow">│</span>
+                                                                               returns RUNNING   returns RUNNING
+                                                                                                <span class="arrow">│</span>
+                                                                                          Architect reviews
+  </div>
+</section>
+
+<section id="retry">
+  <h2>Retry Policy</h2>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Failure Type</th><th>Maximum</th><th>Action when limit reached</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>BUG_CODIGO</td><td>3 attempts</td><td>Aborts pipeline</td></tr>
+      <tr><td>DESIGN_ISSUE</td><td>3 attempts</td><td>Aborts pipeline</td></tr>
+      <tr><td>REQUISITO</td><td>2 attempts</td><td>Reports to user</td></tr>
+      <tr><td>Build failed</td><td>2 attempts</td><td>Reports to Execution Manager</td></tr>
+      <tr><td>Communication error</td><td>Unlimited</td><td>Retries automatically</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><strong>Independent counting:</strong> Devs and Architect have separate counters. A DESIGN_ISSUE does not consume the Dev attempts.</p>
+</section>
+
+<section id="templates">
+  <h2>OpenSpec Templates</h2>
+  <p>The skill includes standard templates in <code>templates/</code> to facilitate spec creation:</p>
+
+  <h4>proposal-template.md</h4>
+  <pre><code># Proposal: [Name]
+
+## Goal
+<!-- Why does this project exist? -->
+
+## Scope
+<!-- What is included and what is out of scope -->
+
+## Features
+- [ ] Feature 1
+- [ ] Feature 2
+
+## Project Acceptance Criteria
+- [ ] Lighthouse > 90
+- [ ] Responsive
+- [ ] WCAG AA</code></pre>
+
+  <h4>design-template.md</h4>
+  <pre><code># Design: [Name]
+
+## Tech Stack
+| Component | Technology | Justification |
+|-----------|------------|---------------|
+
+## Folder Structure
+```
+src/
+├── components/
+├── pages/
+└── services/
+```
+
+## Components
+| Component | Responsibility |
+|-----------|---------------|</code></pre>
+
+  <h4>tasks-template.md</h4>
+  <pre><code># Tasks: [Name]
+
+## Task 1: [Name]
+Assigned to: frontend
+Depends on: none
+
+### Acceptance Criteria
+AC1: ...
+AC2: ...</code></pre>
+</section>
+
+<section id="exemplo">
+  <h2>Practical Example</h2>
+  <p>Below is a complete example of using <strong>OpenSpec + Jarvis-WEB-TEAM</strong> to create a corporate website for a veterinary clinic. The example covers from conception to delivery and evolutionary maintenance.</p>
+
+  <div class="example-card" id="exemplo-clinica">
+    <h3>Scenario: Website for "Happy Animal" Veterinary Clinic</h3>
+
+    <!-- ===== STEP 1 ===== -->
+    <h4>Step 1: Initialize OpenSpec in the project</h4>
+    <pre><code><span style="color:var(--text2)"># Creates the project folder and initializes OpenSpec</span>
+mkdir -p ~/projects/happy-animal && cd ~/projects/happy-animal
+openspec init</code></pre>
+    <p>The <code>openspec init</code> command creates the standard OpenSpec structure:</p>
+    <pre><code><span style="color:var(--text2)"># Automatically generated structure</span>
+happy-animal/
+├── <span style="color:var(--accent)">openspec/</span>
+│   ├── <span style="color:var(--accent)">specs/</span>              <span style="color:var(--text2)"># Source of truth: describes the current system</span>
+│   ├── <span style="color:var(--accent)">changes/</span>            <span style="color:var(--text2)"># Proposed changes (one folder per change)</span>
+│   │   └── <span style="color:var(--accent)">archive/</span>         <span style="color:var(--text2)"># Completed changes are moved here</span>
+│   └── config.yaml         <span style="color:var(--text2)"># Project configuration OpenSpec</span>
+└── <span style="color:var(--accent)">src/</span>                   <span style="color:var(--text2)"># Source code (generated by the skill later)</span></code></pre>
+
+    <blockquote>
+      <strong>Tip:</strong> <code>openspec init</code> only needs to be run <strong>once</strong> in the project lifecycle. All future changes will be created inside <code>openspec/changes/</code>.
+    </blockquote>
+
+    <!-- ===== STEP 2 ===== -->
+    <h4>Step 2: Propose the first change (website creation)</h4>
+    <pre><code><span style="color:var(--text2)"># OpenSpec will guide you through the proposal creation interactively</span>
+openspec propose "Create corporate website for Happy Animal Clinic"</code></pre>
+    <p>OpenSpec automatically generates all change artifacts:</p>
+    <pre><code><span style="color:var(--text2)"># Structure generated inside openspec/changes/</span>
+openspec/changes/corporate-website/
+├── <strong>proposal.md</strong>          <span style="color:var(--text2)"># Intent, scope, features, acceptance criteria</span>
+├── <span style="color:var(--accent)">specs/</span>               <span style="color:var(--text2)"># Delta specs (what will change in system behavior)</span>
+│   └── <span style="color:var(--accent)">site/</span>
+│       └── spec.md
+├── <strong>design.md</strong>            <span style="color:var(--text2)"># Technical decisions: stack, architecture, etc.</span>
+└── <strong>tasks.md</strong>             <span style="color:var(--text2)"># Implementation checklist</span></code></pre>
+
+    <blockquote>
+      <strong>Important:</strong> OpenSpec does NOT replace the skill. It generates the <strong>specification</strong>. The skill <strong>executes</strong> the specification. They are different and complementary layers.
+    </blockquote>
+
+    <!-- ===== STEP 3 ===== -->
+    <h4>Step 3: Complete artifact content</h4>
+
+    <h5>proposal.md The business intent</h5>
+    <pre><code># Proposal: Corporate Website - Happy Animal Clinic
+
+## Goal
+Create professional digital presence for Happy Animal Veterinary Clinic,
+allowing clients to find information, services and get in touch.
+
+## Scope
+Included:
+- Corporate website with 5 pages (Home, About, Services, Team, Contact)
+- Blog with pet health articles
+- Contact form with WhatsApp integration
+- Basic SEO and responsiveness
+
+Excluded:
+- Online booking system (will be handled in a future change)
+- Product e-commerce
+- Customer area with login
+
+## Features
+- Home page with hero and featured services
+- "About" page with clinic history and mission
+- "Services" page with procedure list and prices
+- "Team" page with vet profiles and photos
+- "Contact" page with form and map
+- Blog with listing and individual posts
+- Contact form via POST to endpoint
+- Floating WhatsApp button
+- SEO (meta tags, sitemap, Open Graph)
+- Responsiveness (mobile, tablet, desktop)
+- Basic accessibility (WCAG AA)
+
+## Project Acceptance Criteria
+- [ ] Lighthouse Performance > 90
+- [ ] Lighthouse Accessibility > 85
+- [ ] Lighthouse SEO > 90
+- [ ] Responsive: tested at 3 breakpoints (320px, 768px, 1280px)
+- [ ] Contact form sends data correctly
+- [ ] WhatsApp button opens conversation with correct number
+- [ ] Page navigation works without 404 errors</code></pre>
+
+    <h5>design.md The technical decisions</h5>
+    <pre><code># Design: Corporate Website - Happy Animal Clinic
+
+## Tech Stack
+| Component   | Technology   | Justification                       |
+|-------------|--------------|-------------------------------------|
+| Framework   | Next.js 14   | SSR, SEO, App Router, great DX      |
+| Language    | TypeScript   | Type safety, fewer runtime bugs     |
+| Styling     | Tailwind CSS | Productivity, easy responsiveness   |
+| Deploy      | Vercel       | Native integration with Next.js          |
+
+## Folder Structure
+```
+src/
+├── app/
+│   ├── page.tsx           # Home
+│   ├── about/page.tsx     # About
+│   ├── services/page.tsx  # Services
+│   ├── team/page.tsx      # Team
+│   ├── contact/page.tsx   # Contact
+│   └── blog/
+│       ├── page.tsx       # Blog listing
+│       └── [slug]/page.tsx# Individual post
+├── components/
+│   ├── layout/            # Header, Footer, Navbar
+│   ├── ui/                # Button, Card, Input, Hero
+│   └── sections/          # ServicesGrid, TeamGrid, ContactForm
+├── styles/
+│   └── globals.css
+└── lib/
+    └── api.ts             # API functions
+```
+
+## Main Components
+| Component       | Responsibility                       |
+|-----------------|--------------------------------------|
+| Header          | Logo, navigation, mobile menu        |
+| Hero            | Main banner with CTA                 |
+| ServiceCard     | Service card with icon and description|
+| TeamMemberCard  | Vet card with photo and bio          |
+| ContactForm     | Form with validation and submission  |
+| WhatsAppButton  | Floating button with direct link     |
+| BlogCard        | Post card with image and summary     |
+| Footer          | Links, contact, copyright            |
+
+## Routing
+| Route       | Page     | Description                |
+|-------------|----------|----------------------------|
+| /           | Home     | Hero + services + blog     |
+| /about      | About    | History and mission        |
+| /services   | Services | Procedures grid            |
+| /team       | Team     | Vet profiles               |
+| /contact    | Contact  | Form + map                 |
+| /blog       | Blog     | Post listing               |
+| /blog/:slug | Post     | Full article               |
+
+## Data
+API Route: /api/contact (POST) - receives form data
+WhatsApp: direct link to 5511999999999</code></pre>
+
+    <h5>tasks.md The execution plan</h5>
+    <pre><code># Tasks: Corporate Website - Happy Animal Clinic
+
+## Task 1: Structure and Configuration
+Assigned to: architect
+Depends on: none
+Effort: L
+AC: Next.js + TypeScript + Tailwind project configured, directory structure created
+
+## Task 2: Header, Footer and Base Layout
+Assigned to: frontend
+Depends on: Task 1
+Effort: M
+AC: Header with logo and responsive nav, Footer with contact and social, functional layout on all pages
+
+## Task 3: Home Page
+Assigned to: frontend
+Depends on: Task 2
+Effort: L
+AC: Hero with title, CTA and image; featured services grid; testimonials section; blog preview
+
+## Task 4: About Page
+Assigned to: frontend
+Depends on: Task 2
+Effort: S
+AC: Clinic history, mission/vision/values, team photo
+
+## Task 5: Services Page
+Assigned to: frontend
+Depends on: Task 2
+Effort: M
+AC: Complete services list with icons, description and prices; category filter
+
+## Task 6: Team Page
+Assigned to: frontend
+Depends on: Task 2
+Effort: S
+AC: Vets grid with photo, name, specialty and mini-bio
+
+## Task 7: Contact Page and Form
+Assigned to: frontend
+Depends on: Task 2
+Effort: L
+AC: Form with validation (name, email, phone, message), API integration, success/error feedback, floating WhatsApp button
+
+## Task 8: Blog (Listing + Post)
+Assigned to: frontend
+Depends on: Task 2
+Effort: M
+AC: Post listing with pagination, individual post page with formatted content
+
+## Task 9: SEO and Performance
+Assigned to: frontend
+Depends on: Task 3, 4, 5, 6, 7, 8
+Effort: M
+AC: Meta tags per page, sitemap.xml, Open Graph, Lighthouse > 90, lazy loading images
+
+## Task 10: QA and Final Approval
+Assigned to: qa
+Depends on: Task 9
+Effort: M
+AC: All AC validated, regression test, final report</code></pre>
+
+    <!-- ===== STEP 4 ===== -->
+    <h4>Step 4: Activating the Skill in OpenCode</h4>
+    <p>With the artifacts ready, you activate the skill in OpenCode in two ways:</p>
+
+    <div class="comparison">
+      <div class="comparison-col v1">
+        <h4>Direct Way</h4>
+        <pre style="font-size:12px;margin:0">"Use jarvis-web-team to
+execute the
+Happy Animal Clinic"</pre>
+      </div>
+      <div class="comparison-col v2">
+        <h4>Specific Way (recommended)</h4>
+        <pre style="font-size:12px;margin:0">"Use jarvis-web-team to
+execute the change
+'corporate-website' in
+~/projects/happy-animal"</pre>
+      </div>
+    </div>
+
+    <p>The skill automatically detects:
+      <span class="tag tag-ok">proposal.md exists?</span>
+      <span class="tag tag-ok">design.md exists?</span>
+      <span class="tag tag-ok">tasks.md exists?</span>
+    </p>
+
+    <!-- ===== STEP 5 ===== -->
+    <h4>Step 5: Complete skill execution (with all scenarios)</h4>
+
+    <p>Below is the complete execution log, including <strong>error and correction scenarios</strong> to illustrate the feedback loops:</p>
+
+    <div class="step">
+      <div class="step-label">Phase 1 &mdash; Validate Specification</div>
+      <pre><code>[Jarvis-WEB-TEAM] Phase 1/8 - Validate Specification...
+[Jarvis-WEB-TEAM]   Reading openspec/changes/corporate-website/proposal.md... OK
+[Jarvis-WEB-TEAM]   Reading openspec/changes/corporate-website/design.md... OK
+[Jarvis-WEB-TEAM]   Reading openspec/changes/corporate-website/tasks.md... OK
+[Jarvis-WEB-TEAM]   Validating document consistency... OK
+[Jarvis-WEB-TEAM]   Checking acceptance criteria... 10 tasks, 30 AC found
+[Jarvis-WEB-TEAM]   All specifications valid. Proceeding to Phase 2.</code></pre>
+    </div>
+
+    <div class="step">
+      <div class="step-label">Phase 2 &mdash; Build Execution Graph</div>
+      <pre><code>[Jarvis-WEB-TEAM] Phase 2/8 - Build Execution Graph...
+[Jarvis-WEB-TEAM]   Tasks ordered by dependency:
+[Jarvis-WEB-TEAM]     T1 (architect) → T2 → T3 → T4 → T5 → T6 → T7 → T8 → T9 → T10 (qa)
+[Jarvis-WEB-TEAM]   Parallel execution possible: T4, T5, T6 (all depend only on T2)
+[Jarvis-WEB-TEAM]   execution-state.json created.
+[Jarvis-WEB-TEAM]   State saved. Proceeding to Phase 3.</code></pre>
+
+      <p><strong>Generated execution-state.json file:</strong></p>
+      <pre style="font-size:12px"><code>{
+  "project": "Happy Animal Clinic",
+  "phase": "architect",
+  "tasks": {
+    "T1": { "id": "T1", "status": "pending", "assigned_to": "architect", "retries": 0 },
+    "T2": { "id": "T2", "status": "pending", "assigned_to": "frontend", "retries": 0 },
+    "T3": { "id": "T3", "status": "pending", "assigned_to": "frontend", "retries": 0 },
+    "T4": { "id": "T4", "status": "pending", "assigned_to": "frontend", "retries": 0 },
+    "T5": { "id": "T5", "status": "pending", "assigned_to": "frontend", "retries": 0 },
+    "T6": { "id": "T6", "status": "pending", "assigned_to": "frontend", "retries": 0 },
+    "T7": { "id": "T7", "status": "pending", "assigned_to": "frontend", "retries": 0 },
+    "T8": { "id": "T8", "status": "pending", "assigned_to": "frontend", "retries": 0 },
+    "T9": { "id": "T9", "status": "pending", "assigned_to": "frontend", "retries": 0 },
+    "T10": { "id": "T10", "status": "pending", "assigned_to": "qa", "retries": 0 }
+  },
+  "qa_report": { "status": "pending", "bugs": [] }
+}</code></pre>
+    </div>
+
+    <div class="step">
+      <div class="step-label">Phase 3 &mdash; Architect</div>
+      <pre><code>[Jarvis-WEB-TEAM] Phase 3/8 - Architect...
+[Jarvis-WEB-TEAM]   Consuming design.md... OK
+[Jarvis-WEB-TEAM]   Detailing technical decisions...
+[Jarvis-WEB-TEAM]     Stack: Next.js 14 + TypeScript + Tailwind CSS
+[Jarvis-WEB-TEAM]     Project scaffolding complete.
+[Jarvis-WEB-TEAM]     Directory structure created.
+[Jarvis-WEB-TEAM]     package.json, tsconfig.json, tailwind.config.ts generated.
+[Jarvis-WEB-TEAM]   Architect output saved. Proceeding to Phase 4.</code></pre>
+    </div>
+
+    <div class="step">
+      <div class="step-label">Phase 4 &mdash; Dev Frontend (with error scenarios)</div>
+      <pre><code>[Jarvis-WEB-TEAM] Phase 4/8 - Dev Frontend...
+[Jarvis-WEB-TEAM]   Dispatching Task T2: Header, Footer and Base Layout...
+[Jarvis-WEB-TEAM]   Task T2: ✅ Complete (Header responsivo, Footer com contato)
+
+[Jarvis-WEB-TEAM]   Dispatching Task T3: Home Page...
+[Jarvis-WEB-TEAM]   Task T3: ✅ Complete
+
+[Jarvis-WEB-TEAM]   Dispatching Task T4, T5, T6 in parallel...
+[Jarvis-WEB-TEAM]   Task T4: ✅ Complete (About Page)
+[Jarvis-WEB-TEAM]   Task T5: ✅ Complete (Services Page)
+[Jarvis-WEB-TEAM]   Task T6: ✅ Complete (Team Page)
+
+[Jarvis-WEB-TEAM]   Dispatching Task T7: Contact Page and Form...
+[Jarvis-WEB-TEAM]   Task T7: ✅ Complete
+
+[Jarvis-WEB-TEAM]   Dispatching Task T8: Blog...
+[Jarvis-WEB-TEAM]   Task T8: ✅ Complete
+
+[Jarvis-WEB-TEAM]   Dispatching Task T9: SEO and Performance...
+[Jarvis-WEB-TEAM]   Task T9: ✅ Complete
+[Jarvis-WEB-TEAM]   All development tasks complete. Proceeding to Phase 5.</code></pre>
+    </div>
+
+    <div class="step">
+      <div class="step-label">Phase 5 &mdash; Peer Review <span class="tag tag-accent">NEW</span></div>
+      <pre><code>[Jarvis-WEB-TEAM] Phase 5/8 - Peer Review...
+[Jarvis-WEB-TEAM]   Architect reviewing Tasks T2 through T9...
+
+[Jarvis-WEB-TEAM]   Reviewing T2 (Header/Footer): ✅ Approved
+[Jarvis-WEB-TEAM]   Reviewing T3 (Home): ✅ Approved
+[Jarvis-WEB-TEAM]   Reviewing T4 (About): ✅ Approved
+[Jarvis-WEB-TEAM]   Reviewing T5 (Services): ✅ Approved
+[Jarvis-WEB-TEAM]   Reviewing T6 (Team): ✅ Approved
+[Jarvis-WEB-TEAM]   Reviewing T7 (Contact):
+[Jarvis-WEB-TEAM]     ⚠ ContactForm component too large. Suggest breaking into:
+[Jarvis-WEB-TEAM]       FormField, FormValidator, WhatsAppButton
+[Jarvis-WEB-TEAM]     ❌ REJECTED - returning to Dev Frontend
+
+[Jarvis-WEB-TEAM]   Task T7 returned to Dev for refactoring...
+[Jarvis-WEB-TEAM]   T7 fixed: ContactForm refactored into smaller components.
+[Jarvis-WEB-TEAM]   Re-reviewing T7: ✅ Approved
+
+[Jarvis-WEB-TEAM]   Reviewing T8 (Blog): ✅ Approved
+[Jarvis-WEB-TEAM]   Reviewing T9 (SEO): ✅ Approved
+
+[Jarvis-WEB-TEAM]   Peer Review complete. 9/9 approved. Proceeding to Phase 6.</code></pre>
+
+      <blockquote>
+        <strong>Real Peer Review example:</strong> The architect identified that the
+        <code>ContactForm</code> component was too large (over 200 lines) and suggested splitting it into
+        smaller components. The Dev refactored and Peer Review approved on the second attempt.
+        This <strong>prevented</strong> QA from finding a DESIGN_ISSUE later.
+      </blockquote>
+    </div>
+
+    <div class="step">
+      <div class="step-label">Phase 6 &mdash; QA (Task by Task) with failure classification</div>
+      <pre><code>[Jarvis-WEB-TEAM] Phase 6/8 - QA...
+
+[Jarvis-WEB-TEAM]   Testing Task T2 (Header/Footer):
+[Jarvis-WEB-TEAM]     [AC] Header with responsive navigation... ✅
+[Jarvis-WEB-TEAM]     [AC] Footer with contact and social... ✅
+[Jarvis-WEB-TEAM]     Result: ✅ APPROVED
+
+[Jarvis-WEB-TEAM]   Testing Task T3 (Home):
+[Jarvis-WEB-TEAM]     [AC] Hero with title and CTA... ✅
+[Jarvis-WEB-TEAM]     [AC] Featured services grid... ✅
+[Jarvis-WEB-TEAM]     [AC] Testimonials... ✅
+[Jarvis-WEB-TEAM]     Result: ✅ APPROVED
+
+[Jarvis-WEB-TEAM]   Testing Task T7 (Contact):
+[Jarvis-WEB-TEAM]     [AC] Form with validation... ✅
+[Jarvis-WEB-TEAM]     [AC] Success/error feedback... ✅
+[Jarvis-WEB-TEAM]     [AC] WhatsApp button... ❌
+[Jarvis-WEB-TEAM]     ⚠ Classification: <span class="tag tag-bug">BUG_CODIGO</span>
+[Jarvis-WEB-TEAM]       Description: WhatsApp button does not open on the correct number
+[Jarvis-WEB-TEAM]       Expected: wa.me/5511999999999
+[Jarvis-WEB-TEAM]       Actual: wa.me/5511888888888
+[Jarvis-WEB-TEAM]     → Routing to DEV Frontend...
+
+[Jarvis-WEB-TEAM]   Task T7 fixed by Dev. Re-testing...
+[Jarvis-WEB-TEAM]     [AC] WhatsApp button... ✅
+[Jarvis-WEB-TEAM]     Result: ✅ APPROVED
+
+[Jarvis-WEB-TEAM]   Testing Task T5 (Services):
+[Jarvis-WEB-TEAM]     [AC] Complete services list... ✅
+[Jarvis-WEB-TEAM]     [AC] Icons and description... ✅
+[Jarvis-WEB-TEAM]     [AC] Category filter... ❌
+[Jarvis-WEB-TEAM]     ⚠ Classification: <span class="tag tag-design">DESIGN_ISSUE</span>
+[Jarvis-WEB-TEAM]       Description: Category filter was not implemented
+[Jarvis-WEB-TEAM]       Reason: design.md did not specify how to implement the filter
+[Jarvis-WEB-TEAM]     → Routing to ARCHITECT...
+
+[Jarvis-WEB-TEAM]   Architect reviewed design.md, added filter specification.
+[Jarvis-WEB-TEAM]   Task T5 returned to Dev. Fixed. Re-testing...
+[Jarvis-WEB-TEAM]     [AC] Category filter... ✅
+[Jarvis-WEB-TEAM]     Result: ✅ APPROVED
+
+[Jarvis-WEB-TEAM]   Remaining tasks: T4 ✅, T6 ✅, T8 ✅, T9 ✅
+
+[Jarvis-WEB-TEAM]   Regression test (integrations between tasks):
+[Jarvis-WEB-TEAM]     Page navigation... ✅
+[Jarvis-WEB-TEAM]     Consistent layout... ✅
+[Jarvis-WEB-TEAM]     Responsiveness at 3 breakpoints... ✅
+[Jarvis-WEB-TEAM]     Regression result: ✅ APPROVED
+
+[Jarvis-WEB-TEAM]   QA Summary: 10/10 tasks approved. Proceeding to Phase 7.</code></pre>
+
+      <blockquote>
+        <strong>Two failure types in the same example:</strong> QA found both a
+        <span class="tag tag-bug">BUG_CODIGO</span> (wrong WhatsApp number) and a
+        <span class="tag tag-design">DESIGN_ISSUE</span> (unspecified services filter).
+        Each was routed to the correct agent, avoiding rework.
+      </blockquote>
+    </div>
+
+    <div class="step">
+      <div class="step-label">Phase 7 &mdash; DevOps / Delivery</div>
+      <pre><code>[Jarvis-WEB-TEAM] Phase 7/8 - DevOps...
+[Jarvis-WEB-TEAM]   Checking prerequisites:
+[Jarvis-WEB-TEAM]     10/10 tasks completed... ✅
+[Jarvis-WEB-TEAM]     QA approved all tasks... ✅
+[Jarvis-WEB-TEAM]     No pending or failed tasks... ✅
+[Jarvis-WEB-TEAM]   Production build:
+[Jarvis-WEB-TEAM]     next build... ✅ (2.4s)
+[Jarvis-WEB-TEAM]     Lighthouse report: 94 Performance, 88 Accessibility, 96 SEO
+[Jarvis-WEB-TEAM]   Generating delivery report...
+
+[Jarvis-WEB-TEAM]   ===== DELIVERY REPORT =====
+[Jarvis-WEB-TEAM]   Project: Happy Animal Clinic
+[Jarvis-WEB-TEAM]   Stack: Next.js 14 + TypeScript + Tailwind CSS
+[Jarvis-WEB-TEAM]   Pages: Home, About, Services, Team, Contact, Blog
+[Jarvis-WEB-TEAM]   Implemented features: 10/10
+[Jarvis-WEB-TEAM]   Lighthouse: 94/88/96
+[Jarvis-WEB-TEAM]   Files created at: ~/projects/happy-animal/src/
+[Jarvis-WEB-TEAM]   ================================
+[Jarvis-WEB-TEAM]   Proceeding to Phase 8.</code></pre>
+    </div>
+
+    <div class="step">
+      <div class="step-label">Phase 8 &mdash; User Approval</div>
+      <pre><code>[Jarvis-WEB-TEAM] Phase 8/8 - User Approval...
+[Jarvis-WEB-TEAM] "Is the project in accordance with what you expected?"
+&gt; NO
+
+[Jarvis-WEB-TEAM] "Please describe what needs to be changed/improved:"
+&gt; The services page is good, but I want to add a
+&gt; clinic photo on the About page. And the contact form
+&gt; could send a copy to the customers email too.
+
+[Jarvis-WEB-TEAM] Restarting pipeline from Phase 3 (Architect) with new requirements...
+[Jarvis-WEB-TEAM]   New proposal: add photo on About page
+[Jarvis-WEB-TEAM]   New proposal: copy email in the form
+[Jarvis-WEB-TEAM]   Execution Manager updated execution-state.json...
+[Jarvis-WEB-TEAM]   Phase 3: Architect adjusting design.md...
+[Jarvis-WEB-TEAM]   Phase 4: Dev adjusting T4 (About) and T7 (Contact)...
+[Jarvis-WEB-TEAM]   Phase 5: Peer Review... ✅
+[Jarvis-WEB-TEAM]   Phase 6: QA... ✅
+[Jarvis-WEB-TEAM]   Phase 7: DevOps... ✅
+[Jarvis-WEB-TEAM]   Phase 8: Approval...
+[Jarvis-WEB-TEAM] "Is the project in accordance?"
+&gt; YES 🎉 Project completed successfully!</code></pre>
+
+      <blockquote>
+        <strong>Important note:</strong> When the user rejects, the pipeline does <strong>not</strong>
+        go back to Phase 1 (Validate Spec). It goes back to <strong>Phase 3 (Architect)</strong>
+        because the specification was already validated. This saves time.
+        If the user wants to change fundamental requirements, they must first update the
+        artifacts in OpenSpec and then re-run the skill.
+      </blockquote>
+    </div>
+
+    <!-- ===== STEP 6: Future change ===== -->
+    <h4>Step 6: Project evolution (months later)</h4>
+
+    <p>The client now wants to add an <strong>online booking system</strong>.
+    With OpenSpec + Jarvis-WEB-TEAM, this is handled as a new change:</p>
+
+    <pre><code><span style="color:var(--text2)"># OpenSpec creates a NEW change, independent from the previous one</span>
+cd ~/projects/happy-animal
+openspec propose "Online booking system"
+
+<span style="color:var(--text2)"># New change structure (alongside the previous one)</span>
+openspec/changes/
+├── corporate-website/          <span style="color:var(--text2)"># Previous change (already archived)</span>
+│   └── archive/
+└── online-booking/               <span style="color:var(--text2)"># New change</span>
+    ├── proposal.md              <span style="color:var(--text2)"># Scope: calendar, timeslots, confirmation</span>
+    ├── design.md                <span style="color:var(--text2)"># Stack: same + database</span>
+    ├── tasks.md                 <span style="color:var(--text2)"># Tasks: data model, API, calendar UI</span>
+    └── specs/site/spec.md       <span style="color:var(--text2)"># Updated behavior</span></code></pre>
+
+    <p><strong>Key difference:</strong> the skill executes <strong>only the tasks from the new change</strong>:</p>
+
+    <pre><code><span style="color:var(--text2)"># Prompt to execute only the new feature</span>
+"Use jarvis-web-team to execute the change 'online-booking'
+in ~/projects/happy-animal"
+
+<span style="color:var(--text2)"># The skill will:</span>
+[Jarvis-WEB-TEAM] Change detected: online-booking
+[Jarvis-WEB-TEAM] 5 tasks identified (vs 10 from the previous change)
+[Jarvis-WEB-TEAM] Validating specs... OK
+[Jarvis-WEB-TEAM] Starting pipeline...
+
+<span style="color:var(--text2)"># The existing project is not recreated from scratch.
+# Only the new features are implemented.</span></code></pre>
+
+    <!-- ===== Advanced Scenario: Abort ===== -->
+    <h4>Advanced Scenario: Abort due to retry limit</h4>
+
+    <p>If the same task fails 3 consecutive times, the pipeline is aborted. Example:</p>
+
+    <pre><code>[Jarvis-WEB-TEAM] Task T7: Attempt 1/3 - BUG_CODIGO (wrong WhatsApp number)
+[Jarvis-WEB-TEAM] Task T7: Attempt 2/3 - BUG_CODIGO (form validation broken)
+[Jarvis-WEB-TEAM] Task T7: Attempt 3/3 - BUG_CODIGO (broken layout on mobile)
+
+[Jarvis-WEB-TEAM] ❌ PIPELINE ABORTED
+[Jarvis-WEB-TEAM] Task T7 (Contact) reached the limit of 3 attempts.
+[Jarvis-WEB-TEAM] Error report available at: execution-state.json
+[Jarvis-WEB-TEAM] Recommendation: review design.md and acceptance criteria for Task T7.
+[Jarvis-WEB-TEAM] "Would you like to restart the task with manual adjustments?"</code></pre>
+
+    <blockquote>
+      <strong>Why is this important?</strong> Without the retry limit, the pipeline
+      could enter an infinite loop wasting tokens and time. The forced abort forces
+      a human review or specification adjustment, preventing vicious cycles.
+    </blockquote>
+
+    <!-- ===== Comparison: v1 vs v2 in real scenario ===== -->
+    <h4>Comparison: Old model (v1) vs New model (v2)</h4>
+
+    <div class="comparison">
+      <div class="comparison-col v1">
+        <h4 style="color:var(--tag-bug-text)">v1 (Old Model)</h4>
+        <ul>
+          <li>PM/PO <strong>created</strong> the spec from scratch on every run</li>
+          <li>If a requirement changed, the pipeline <strong>restarted entirely</strong></li>
+          <li>QA tested the <strong>entire project</strong> at once</li>
+          <li>QA feedback was generic: "has bugs"</li>
+          <li>No Peer Review: code went straight to QA</li>
+          <li>Infinite correction loop (without retry limit)</li>
+        </ul>
+      </div>
+      <div class="comparison-col v2">
+        <h4 style="color:var(--tag-ok-text)">v2 (New Model)</h4>
+        <ul>
+          <li>Execution Manager <strong>consumes</strong> ready spec from OpenSpec</li>
+          <li>Requirement change = <strong>new change</strong> (smaller tasks)</li>
+          <li>QA tests <strong>task by task</strong>, regression test at the end</li>
+          <li>Classified feedback: <span class="tag tag-bug">BUG</span> <span class="tag tag-design">DESIGN</span> <span class="tag tag-req">REQ</span></li>
+          <li><strong>Peer Review</strong> mandatory before QA</li>
+          <li><strong>Max 3 attempts</strong> per agent type</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ===== Flowchart ===== -->
+    <h4>Flowchart: possible paths during execution</h4>
+    <div class="diagram">
+<span class="comment">                    ┌───────────────┐</span>
+<span class="comment">                    │   SPEC OK?   │</span>
+<span class="comment">                    └───────┬───────┘</span>
+                       <span class="arrow">│</span>
+              ┌────────────<span class="arrow">┴</span>────────────┐
+              <span class="arrow">│</span>                         <span class="arrow">│</span>
+            YES                        NO
+              <span class="arrow">│</span>                         <span class="arrow">│</span>
+              <span class="arrow">▼</span>                         <span class="arrow">▼</span>
+        Execution Graph         Reports error to
+               <span class="arrow">│</span>              user / planning
+              <span class="arrow">▼</span>
+          Architect
+              <span class="arrow">│</span>
+              <span class="arrow">▼</span>
+            Dev(s)
+              <span class="arrow">│</span>
+              <span class="arrow">▼</span>
+        Peer Review ──<span class="bug">REJECTED</span>──▶ Dev (loop A)
+               <span class="arrow">│</span>
+            APPROVED
+              <span class="arrow">│</span>
+              <span class="arrow">▼</span>
+            QA ──<span class="bug">BUG</span>────▶ Dev (loop B)
+              <span class="arrow">│</span>      <span class="design-issue">DESIGN</span>──▶ Architect (loop C)
+               <span class="arrow">│</span>      <span class="req">REQ</span>────▶ Exec Manager (loop D)
+            APPROVED
+              <span class="arrow">│</span>
+              <span class="arrow">▼</span>
+          DevOps
+              <span class="arrow">│</span>
+              <span class="arrow">▼</span>
+        Approval User ──<span class="bug">NO</span>──▶ Exec Manager (loop E)
+              <span class="arrow">│</span>
+             YES
+              <span class="arrow">│</span>
+              <span class="arrow">▼</span>
+             🎉 END
+    </div>
+
+    <!-- ===== Best Practices ===== -->
+    <h4>Best Practices when using OpenSpec + Jarvis-WEB-TEAM</h4>
+
+    <div class="step">
+      <div class="step-label">Recommendations</div>
+      <ol>
+        <li><strong>Write clear Acceptance Criteria:</strong> Each task should have specific, testable AC. Avoid vague AC like "works well".</li>
+        <li><strong>One change per feature:</strong> Do not accumulate multiple features in the same change. Small changes are easier to execute, test and archive.</li>
+        <li><strong>Do not skip Peer Review:</strong> Peer Review catches design problems that QA would not catch (or would catch too late). It is an investment that reduces rework.</li>
+        <li><strong>Classify QA failures correctly:</strong> A misclassified BUG_CODIGO as DESIGN_ISSUE goes to the wrong agent and wastes time.</li>
+        <li><strong>Archive completed changes:</strong> Use <code>openspec archive</code> to move completed changes to the <code>archive/</code> directory. This keeps the project organized.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section id="comandos">
+  <h2>Useful Commands</h2>
+
+  <h3>OpenSpec</h3>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Context</th><th>Command</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Initialize</td>
+        <td><code>openspec init</code></td>
+        <td>Creates OpenSpec structure in the project</td>
+      </tr>
+      <tr>
+        <td>Propose change</td>
+        <td><code>openspec propose "description"</code></td>
+        <td>Creates new change with proposal, design, tasks</td>
+      </tr>
+      <tr>
+        <td>View status</td>
+        <td><code>openspec status --change "nome"</code></td>
+        <td>Shows change progress</td>
+      </tr>
+      <tr>
+        <td>Explore idea</td>
+        <td><code>openspec explore "ideia"</code></td>
+        <td>Generates exploration.md before proposing</td>
+      </tr>
+      <tr>
+        <td>Archive change</td>
+        <td><code>openspec archive "nome"</code></td>
+        <td>Moves completed change to archive/ and merges specs</td>
+      </tr>
+      <tr>
+        <td>View active changes</td>
+        <td><code>ls openspec/changes/</code></td>
+        <td>Lists all in-progress changes</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Jarvis-WEB-TEAM (OpenCode)</h3>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Context</th><th>Prompt / Action</th><th>Result</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Execute change</td>
+        <td><code>"Use jarvis-web-team to execute the change 'X' in [folder]"</code></td>
+        <td>Complete pipeline (8 phases)</td>
+      </tr>
+      <tr>
+        <td>Specific phase</td>
+        <td><code>"Use jarvis-web-team, only the design phase"</code></td>
+        <td>Executes only the Architect</td>
+      </tr>
+      <tr>
+        <td>View state</td>
+        <td><code>cat execution-state.json</code></td>
+        <td>Current status of all tasks</td>
+      </tr>
+      <tr>
+        <td>Review log</td>
+        <td><code>Check conversation history</code></td>
+        <td>Complete log of each phase</td>
+      </tr>
+      <tr>
+        <td>Pipeline without OpenSpec</td>
+        <td><code>"Use jarvis-web-team to create a landing page, the spec is in docs/"</code></td>
+        <td>Works with manual specs</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Quick Diagnostics</h3>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Situation</th><th>What to check</th><th>Solution</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Pipeline does not start</td>
+        <td>Do proposal.md, design.md, tasks.md exist?</td>
+        <td>Create artifacts with OpenSpec or manually</td>
+      </tr>
+      <tr>
+        <td>Task keeps failing</td>
+        <td>Are the acceptance criteria clear?</td>
+        <td>Review the AC in tasks.md</td>
+      </tr>
+      <tr>
+        <td>QA flags as REQUISITO</td>
+        <td>Does proposal.md cover the expected behavior?</td>
+        <td>Update the proposal in OpenSpec</td>
+      </tr>
+      <tr>
+        <td>QA flags as DESIGN_ISSUE</td>
+        <td>Is design.md specific enough?</td>
+        <td>Detail the technical decisions in design.md</td>
+      </tr>
+      <tr>
+        <td>Infinite QA loop</td>
+        <td>Retry count in execution-state.json</td>
+        <td>Fix the task manually or abort</td>
+      </tr>
+      <tr>
+        <td>User rejected delivery</td>
+        <td>What is missing that was not in the proposal?</td>
+        <td>Create a new change in OpenSpec with the adjustments</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="changelog">
+  <h2>Changelog v1 &rarr; v2</h2>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>What changed</th><th>v1 (before)</th><th>v2 (now)</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Main agent</td>
+        <td>PM/PO created specification</td>
+        <td><strong>Execution Manager</strong> consumes ready specification</td>
+      </tr>
+      <tr>
+        <td>Specification source</td>
+        <td>Conversation with user</td>
+        <td><strong>proposal.md, design.md, tasks.md</strong> (OpenSpec or other)</td>
+      </tr>
+      <tr>
+        <td>Pipeline</td>
+        <td>Linear without input validation</td>
+        <td><strong>Validate + Graph + Exec + Peer Review + QA + DevOps</strong></td>
+      </tr>
+      <tr>
+        <td>Peer Review</td>
+        <td>Did not exist</td>
+        <td><strong>Mandatory</strong> before QA</td>
+      </tr>
+      <tr>
+        <td>QA</td>
+        <td>Tested the entire project</td>
+        <td><strong>Task by task</strong> + failure classification</td>
+      </tr>
+      <tr>
+        <td>Feedback QA</td>
+        <td>Generic ("fix bugs")</td>
+        <td><strong>Classified:</strong> BUG_CODIGO / DESIGN_ISSUE / REQUISITO</td>
+      </tr>
+      <tr>
+        <td>State</td>
+        <td>Did not exist</td>
+        <td><strong>execution-state.json</strong> with trackable progress</td>
+      </tr>
+      <tr>
+        <td>Retry</td>
+        <td>Infinite loop</td>
+        <td><strong>Max 3 attempts</strong> per agent type</td>
+      </tr>
+      <tr>
+        <td>Compatibility</td>
+        <td>OpenCode only</td>
+        <td><strong>OpenSpec + Claude Code + Cursor + manual</strong></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<div class="footer">
+  Jarvis-WEB-TEAM v2.0.0 Spec-Driven Execution Framework OpenCode Skill
+</div>
+
+</main>
+</div>
+
+<script>
+  (function() {
+    const check = document.getElementById('themeCheck');
+    const label = document.getElementById('theme-label');
+
+    const saved = localStorage.getItem('jarvis-theme');
+    if (saved === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      check.checked = true;
+      label.textContent = 'Dark';
+    }
+
+    check.addEventListener('change', function() {
+      if (this.checked) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('jarvis-theme', 'dark');
+        label.textContent = 'Dark';
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('jarvis-theme', 'light');
+        label.textContent = 'Light';
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>
